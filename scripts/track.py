@@ -124,4 +124,6 @@ if __name__ == '__main__':
     parser.add_argument('--initial_yaw', type=float, default=175, help='initial yaw for pantilt camera')
     parser.add_argument('--initial_pitch', type=float, default=120, help='initial pitch for pantilt camera')
 
-    track(parser.parse_args())
+    args, _ = parser.parse_known_args()
+
+    track(args)

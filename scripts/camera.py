@@ -47,7 +47,7 @@ if __name__ == '__main__':
     parser.add_argument("--width", type=int, default=320)
     parser.add_argument("--height", type=int, default=320)
     parser.add_argument("--fps", type=int, default=30)
-    args = parser.parse_args()
+    args, _ = parser.parse_known_args()
 
     try:
         raw_frames(args.width, args.height, args.fps)

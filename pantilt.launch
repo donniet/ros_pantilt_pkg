@@ -1,0 +1,6 @@
+<launch>
+  <node pkg="pantilt_pkg" name="pose" type="pose.py" output="screen" />
+  <node pkg="pantilt_pkg" name="track" type="track.py" output="screen" />
+  <node pkg="pantilt_pkg" name="detect" type="detect.py" args="--model_path /home/pi/pantilt/facessd_mobilenet_v2_quantized_320x320_open_image_v4_edgetpu.tflite" output="screen" />
+  <node pkg="pantilt_pkg" name="camera" type="camera.py" output="screen" />
+</launch>

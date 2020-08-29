@@ -97,5 +97,6 @@ if __name__ == '__main__':
     parser.add_argument('--model_path', help='directory to saved_model', default='.')
     parser.add_argument('--label_map', help='path to label_map file', default='label_map.pbtxt')
     parser.add_argument('--edgetpu', help='load edgetpu library', type=bool, default=True)
-    
-    listener(parser.parse_args())
+   
+    args, _ = parser.parse_known_args()
+    listener(args)
