@@ -5,6 +5,7 @@ from adafruit_servokit import ServoKit
 from functools import partial
 from geometry_msgs.msg import Pose, Quaternion, Vector3
 from math import asin, atan2, pi
+from pantilt_pkg.msg import Pose
 
 def ToEulerAngles(q):
     pitch = 0
@@ -30,10 +31,17 @@ def ToEulerAngles(q):
     return roll, pitch, yaw
 
 
-def handlePose(kit, pose):
+def handleQuaterniaon(kit, pose):
     roll, pitch, yaw = ToEulerAngles(pose.Quaterion)
 
     print('roll, pitch, yaw = {} {} {}'.format(roll, pitch, yaw))
+
+def handlePose(kit, pub, pose):
+    if pose.yaw >= 0 and pose.yaw < kit.servo[0].actuation_range:
+        kit.servo[0].angle = pose.yaw
+
+    if pose.pitch >= 0 and pose.pitch < kit.servo[1].actuation_range: 
+        kit.servo[1].angle = pose.pitch
 
 def handleVector3(kit, pub, vec3):
     print('roll, pitch, yaw = {} {} {}'.format(vec3.x, vec3.y, vec3.z))
@@ -56,13 +64,18 @@ def listener():
 
     rospy.init_node('pantilt', anonymous=True)
 
-    rate = rospy.Rate(30)
+    rate = rospy.Rate(10)
 
-    pub = rospy.Publisher('pantilt', Vector3, queue_size=10)
-    rospy.Subscriber('pantiltPose', Vector3, partial(handleVector3, kit, pub))
+    pub = rospy.Publisher('pantilt', Pose, queue_size=10)
+    rospy.Subscriber('pantiltPose', Pose, partial(handlePose, kit, pub))
 
     while not rospy.is_shutdown():
-        pub.publish(Vector3(0, kit.servo[1].angle, kit.servo[0].angle))
+        pose = Pose()
+        pose.stamp = rospy.Time.now()
+        pose.yaw = kit.servo[0].angle
+        pose.pitch = kit.servo[1].angle
+
+        pub.publish(pose)
         rate.sleep()
 
 if __name__ == "__main__":

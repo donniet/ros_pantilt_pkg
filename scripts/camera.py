@@ -30,7 +30,7 @@ class Processor(object):
 
 
 def raw_frames(width, height, fps=30):
-    pub = rospy.Publisher('rawFrames', Image, queue_size=10)
+    pub = rospy.Publisher('rawFrames', Image, queue_size=1)
     rospy.init_node('camera', anonymous=True)
 
     rate = rospy.Rate(fps)

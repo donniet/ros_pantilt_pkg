@@ -84,8 +84,8 @@ def listener(args):
 
     rospy.init_node('detector', anonymous=True)
 
-    publisher = rospy.Publisher('detections', Detect, queue_size=100)
-    annotations = rospy.Publisher('annotations', CompressedImage, queue_size=100)
+    publisher = rospy.Publisher('detections', Detect, queue_size=1)
+    annotations = rospy.Publisher('annotations', CompressedImage, queue_size=1)
 
     rospy.Subscriber('rawFrames', Image, partial(process, interpreter, input_details, output_details, publisher, annotations))
 

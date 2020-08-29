@@ -58,6 +58,7 @@ add_message_files(
   FILES
   Detect.msg
   Box.msg
+  Pose.msg
 )
 
 ## Generate services in the 'srv' folder

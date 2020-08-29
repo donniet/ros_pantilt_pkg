@@ -7,6 +7,7 @@ import rospy
 
 from pantilt_pkg.msg import Detect
 from geometry_msgs.msg import Pose, Quaternion, Vector3
+from pantilt_pkg.msg import Pose
 
 # from here: https://www.pyimagesearch.com/2016/11/07/intersection-over-union-iou-for-object-detection/
 def bb_intersection_over_union(boxA, boxB):
@@ -46,6 +47,7 @@ class Tracker(object):
 
 
     def process_detection(self, detect):
+        self.detect_stamp = detect.stamp
         if detect.num == 0:
             return
 
@@ -73,9 +75,9 @@ class Tracker(object):
             self.adjust_position()
 
     def process_position(self, position):
-        self.yaw = position.z
-        self.pitch = position.y
-        self.initial = False
+        self.yaw = position.yaw
+        self.pitch = position.pitch
+        self.pose_stamp = position.stamp
 
     def adjust_position(self):
         # find the center of the box
@@ -90,32 +92,32 @@ class Tracker(object):
         dy = y * self.fov[1]
 
         # soften the values
-        dx /= 3 
-        dy /= 3 
+        dx /= 5 
+        dy /= 5 
 
         # add that to the current yaw
 
        
         #TODO: these bounds checking should be replaced by feedback from the pantilt camera's actual position.  How do you query a node to get data from it?
-        if self.pitch + dy >= 0 and self.pitch + dy < 180:
-            self.pitch += dy
-        if self.yaw + dx >= 0 and self.yaw + dx < 180:
-            self.yaw += dx
+        pitch = self.pitch + dy
+        yaw = self.yaw + dx
 
-        if not self.initial:
-            #print('positioning: {} {}'.format(self.pitch, self.yaw))
-
-            self.pub.publish(Vector3(0, self.pitch, self.yaw))
+        #print('positioning: {} {}'.format(self.pitch, self.yaw))
+        p = Pose()
+        p.stamp = self.detect_stamp
+        p.pitch = pitch
+        p.yaw = yaw
+        self.pub.publish(p)
 
 def track(args):
     rospy.init_node('object_tracker', anonymous=True)
 
-    pub = rospy.Publisher('pantiltPose', Vector3, queue_size=10)
+    pub = rospy.Publisher('pantiltPose', Pose, queue_size=1)
 
     tracker = Tracker(args.initial_yaw, args.initial_pitch, pub)
 
     rospy.Subscriber('detections', Detect, lambda d: tracker.process_detection(d)) 
-    rospy.Subscriber('pantilt', Vector3, lambda v: tracker.process_position(v))
+    rospy.Subscriber('pantilt', Pose, lambda v: tracker.process_position(v))
 
     rospy.spin()
 
