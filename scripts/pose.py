@@ -138,9 +138,9 @@ def listener():
 
     rospy.init_node('pantilt', anonymous=True)
 
-    rate = rospy.Rate(10)
+    rate = rospy.Rate(5)
 
-    pub = rospy.Publisher('pantilt', Pose, queue_size=10)
+    pub = rospy.Publisher('pantilt', Pose, queue_size=1)
     br = tf2_ros.TransformBroadcaster()
     rospy.Subscriber('pantiltPose', Pose, partial(handlePose, kit, pub))
 
