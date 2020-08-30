@@ -120,7 +120,7 @@ catkin_package(
 #  LIBRARIES pantilt_pkg
 #  CATKIN_DEPENDS roscpp rospy sensor_msgs std_msgs
 #  DEPENDS system_lib
-  CATKIN_DEPENDS message_runtime
+  CATKIN_DEPENDS message_runtime 
 )
 
 ###########
